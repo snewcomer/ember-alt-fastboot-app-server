@@ -1,0 +1,46 @@
+{
+  "name": "ember-alt-fastboot-app-server",
+  "version": "0.0.1",
+  "description": "Production FastBoot server. Not to be used directly.",
+  "scripts": {
+    "test": "NODE_ENV=test mocha",
+    "lint": "eslint ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/snewcomer/ember-alt-fastboot-app-server.git"
+  },
+  "engines": {
+    "node": ">= 10.*"
+  },
+  "files": [
+    "src/**/*.js"
+  ],
+  "keywords": [
+    "ember",
+    "fastboot",
+    "server"
+  ],
+  "license": "UNLICENSED",
+  "dependencies": {
+    "base-64": "^0.1.0",
+    "basic-auth": "^2.0.1",
+    "chalk": "^2.4.2",
+    "compression": "^1.6.2",
+    "dag-map": "^2.0.2",
+    "express": "^4.16.4",
+    "fastboot": "^2.0.1"
+  },
+  "devDependencies": {
+    "babel-core": "^6.10.4",
+    "babel-preset-es2015": "^6.9.0",
+    "chai": "^4.1.0",
+    "ember-cli": "^2.10.2",
+    "eslint": "^5.15.3",
+    "eslint-plugin-node": "^8.0.1",
+    "mocha": "^5.0.0",
+    "request": "^2.88.0",
+    "request-promise": "^4.2.1",
+    "request-promise-native": "^1.0.7"
+  }
+}
