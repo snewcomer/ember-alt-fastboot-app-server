@@ -1,6 +1,6 @@
 {
   "name": "ember-alt-fastboot-app-server",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Production FastBoot server. Not to be used directly.",
   "scripts": {
     "test": "NODE_ENV=test mocha",
