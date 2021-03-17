@@ -3,7 +3,7 @@
 const EventEmitter = require('events').EventEmitter;
 
 const DAGMap = require('dag-map').default;
-const express = require('express');
+const fastify = require('fastify');
 
 const UI = require('./ui');
 
@@ -62,7 +62,7 @@ class ClusterWorker extends EventEmitter {
     // Using express for now. The API almost completely abstracts Express
     // so, save for the actualy middleware implementations, the whole thing
     // can be swapped out.
-    this.app = express();
+    this.app = fastify();
     this._started = false;
 
     this.loadMiddleware();
@@ -127,8 +127,10 @@ class ClusterWorker extends EventEmitter {
    * @returns {Promise} Promise that resolves when the server is listening.
    * @public
    */
-  start() {
+  async start() {
     this._started = true;
+
+    await this.app.register(require('fastify-express'));
 
     this.middlewares.each((name, value) => {
       // "Missing" nodes still show up in the topsort.
@@ -162,11 +164,21 @@ class ClusterWorker extends EventEmitter {
     });
 
     return new Promise(resolve => {
-      this.app.listen(this.port, this.host, () => {
-        this.ui.writeLine(`HTTP server started on ${this.port}.`);
+      this.app.listen(this.port, this.host, (err, address) => {
+        if (err) {
+          fastify.log.error(err);
+          throw err;
+        }
 
+        this.ui.writeLine(`Fastify HTTP server started on ${address}.`);
         resolve();
       });
+
+      // this.app.listen(this.port, this.host, () => {
+      //   this.ui.writeLine(`HTTP server started on ${this.port}.`);
+      //
+      //   resolve();
+      // });
     }).then(() => {
       process.send({ event: 'healthy' });
     });

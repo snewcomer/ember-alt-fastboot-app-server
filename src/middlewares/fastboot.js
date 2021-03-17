@@ -75,7 +75,7 @@ class FastBootMiddleware {
       return;
     }
 
-    if (process.env.FASTBOOT_DISABLED || (req.query.hasOwnProperty('fastboot') && req.query.fastboot === 'false')) {
+    if (process.env.FASTBOOT_DISABLED || req.query.fastboot === 'false') {
       res.sendFile('index.html', { root: path.join(this.distPath, 'webroot') })
     } else {
       this.fastboot.visit(req.url, { request: req, response: res })
@@ -118,6 +118,7 @@ class FastBootMiddleware {
       res.status(result.statusCode);
 
       if (typeof body === 'string') {
+        res.type('text/html');
         res.send(body);
       } else if (result.error) {
         res.send(body[0]);

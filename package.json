@@ -29,7 +29,8 @@
     "compression": "^1.6.2",
     "dag-map": "^2.0.2",
     "express": "^4.16.4",
-    "fastboot": "^3.1.2"
+    "fastboot": "^3.1.2",
+    "fastify-express": "^0.3.2"
   },
   "devDependencies": {
     "babel-core": "^6.10.4",
