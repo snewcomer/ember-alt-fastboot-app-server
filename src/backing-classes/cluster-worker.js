@@ -83,7 +83,6 @@ class ClusterWorker extends EventEmitter {
     require('../middlewares/compression')(this);
     // require('../middlewares/master-error')(this);
     require('../middlewares/fastboot')(this, { buildSandboxGlobals: this.buildSandboxGlobals });
-    // require('../middlewares/missing-assets')(this);
     require('../middlewares/static-serve')(this);
   }
 

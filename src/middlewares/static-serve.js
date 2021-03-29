@@ -1,5 +1,7 @@
 'use strict';
 
+const fs = require('fs');
+
 // const path = require('path');
 // const express = require('express');
 
@@ -60,8 +62,15 @@ class StaticServeMiddleware {
     //   };
     // }
 
-    // Now that we have either found or created a static serve middleware, use it.
-    return res.sendFile(req.url);
+    if (fs.existsSync(req.url)) {
+      res.sendFile(req.url);
+    } else {
+      res.send(new Error('404 Not Found'));
+    }
+  }
+
+  errorHandler(error, req, reply) {
+    reply.code(404).send(error);
   }
 }
 
@@ -85,6 +94,5 @@ module.exports = function(worker) {
       path: '/assets/*',
       callback: staticServe.middleware.bind(staticServe),
     },
-    before: 'missing-assets'
   });
 };
