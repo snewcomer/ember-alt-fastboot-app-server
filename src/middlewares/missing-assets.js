@@ -11,7 +11,7 @@ module.exports = function missingAssetsMiddlewareFactory(worker) {
   worker.addMiddleware({
     name: 'missing-assets',
     value: {
-      method: 'get',
+      method: 'GET',
       path: '/assets/*',
       callback(req, res) {
         return res.sendStatus(404);

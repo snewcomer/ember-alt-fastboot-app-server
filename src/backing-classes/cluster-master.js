@@ -63,7 +63,7 @@ class ClusterMaster {
     // Immutable properties of this cluster master instance.
     this.host = options.host;
     this.port = options.port;
-    this.sandboxGlobals = options.sandboxGlobals;
+    this.buildSandboxGlobals = this.buildSandboxGlobals;
 
     // Determine how many workers to spin up.
     if (options.workerCount) {
@@ -263,7 +263,7 @@ class ClusterMaster {
       distPath: this.distPath,
       host: this.host,
       port: this.port,
-      sandboxGlobals: this.sandboxGlobals
+      buildSandboxGlobals: this.buildSandboxGlobals,
     };
 
     return {

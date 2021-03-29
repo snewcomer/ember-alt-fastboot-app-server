@@ -1,7 +1,7 @@
 'use strict';
 
-const path = require('path');
-const express = require('express');
+// const path = require('path');
+// const express = require('express');
 
 /**
  * The StaticServeMiddleware class provides a stateful wrapper around `express.static`.
@@ -42,26 +42,26 @@ class StaticServeMiddleware {
    * The middleware method should be called, bound, by express.
    * @method middleware
    */
-  middleware(req, res, next) {
+  middleware(req, res) {
     // If we don't know what assets to serve, send a 500.
     if (!this.distPath) {
       res.sendStatus(500);
       return;
     }
 
-    let delegatedStaticServe = this.staticServer[this.distPath];
+    // let delegatedStaticServe = this.staticServer[this.distPath];
 
-    if (!delegatedStaticServe) {
-      delegatedStaticServe = express.static(path.join(this.distPath, 'webroot'));
+    // if (!delegatedStaticServe) {
+    //   delegatedStaticServe = express.static(path.join(this.distPath, 'webroot'));
 
-      // Only ever keep one.
-      this.staticServer = {
-        [this.distPath]: delegatedStaticServe
-      };
-    }
+    //   // Only ever keep one.
+    //   this.staticServer = {
+    //     [this.distPath]: delegatedStaticServe
+    //   };
+    // }
 
     // Now that we have either found or created a static serve middleware, use it.
-    return delegatedStaticServe.call(this, req, res, next);
+    return res.sendFile(req.url);
   }
 }
 
@@ -80,7 +80,11 @@ module.exports = function(worker) {
 
   worker.addMiddleware({
     name: 'static-serve',
-    value: staticServe.middleware.bind(staticServe),
+    value: {
+      method: 'GET',
+      path: '/assets/*',
+      callback: staticServe.middleware.bind(staticServe),
+    },
     before: 'missing-assets'
   });
 };

@@ -5,6 +5,8 @@ const EventEmitter = require('events').EventEmitter;
 const DAGMap = require('dag-map').default;
 const fastify = require('fastify');
 
+const path = require('path')
+
 const UI = require('./ui');
 
 const deserialize = require('../utils/serialization').deserialize;
@@ -40,7 +42,7 @@ class ClusterWorker extends EventEmitter {
 
     this.host = options.host;
     this.port = options.port;
-    this.sandboxGlobals = options.sandboxGlobals;
+    this.buildSandboxGlobals = options.buildSandboxGlobals;
 
     this.distPath = options.distPath || null;
 
@@ -79,9 +81,9 @@ class ClusterWorker extends EventEmitter {
   loadMiddleware() {
     // require('../middlewares/basic-auth')(this);
     require('../middlewares/compression')(this);
-    require('../middlewares/master-error')(this);
-    require('../middlewares/fastboot')(this, { sandboxGlobals: this.sandboxGlobals });
-    require('../middlewares/missing-assets')(this);
+    // require('../middlewares/master-error')(this);
+    require('../middlewares/fastboot')(this, { buildSandboxGlobals: this.buildSandboxGlobals });
+    // require('../middlewares/missing-assets')(this);
     require('../middlewares/static-serve')(this);
   }
 
@@ -130,7 +132,11 @@ class ClusterWorker extends EventEmitter {
   async start() {
     this._started = true;
 
-    await this.app.register(require('fastify-express'));
+    await this.app.register(require('fastify-express'))
+    await this.app.register(require('fastify-static'), {
+      root: path.join(this.distPath, 'webroot'),
+      prefix: '/webroot/',
+    });
 
     this.middlewares.each((name, value) => {
       // "Missing" nodes still show up in the topsort.
@@ -140,33 +146,22 @@ class ClusterWorker extends EventEmitter {
 
       if (value instanceof Function) {
         // Sugar for simplistic middlewares that are just `app.use`.
+        // fastify-express
         this.app.use(value);
       } else {
-        // Supports the invocation pattern for https://expressjs.com/en/4x/api.html#app.METHOD
         const method = value.method;
         const path = value.path;
         const callback = value.callback || value.callbacks;
 
-        const args = [];
-
-        if (path) {
-          args.push(path);
-        }
-
-        if (Array.isArray(callback)) {
-          args.splice(args.length, 0, ...callback);
-        } else {
-          args.push(callback);
-        }
-
-        this.app[method](...args);
+        // fastboot, static-serve
+        this.app.route({ method, url: path, handler: callback });
       }
     });
 
     return new Promise(resolve => {
       this.app.listen(this.port, this.host, (err, address) => {
         if (err) {
-          fastify.log.error(err);
+          this.app.log.error(err);
           throw err;
         }
 
