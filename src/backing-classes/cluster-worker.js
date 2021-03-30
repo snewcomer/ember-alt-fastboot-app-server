@@ -80,7 +80,7 @@ class ClusterWorker extends EventEmitter {
    */
   loadMiddleware() {
     // require('../middlewares/basic-auth')(this);
-    require('../middlewares/compression')(this);
+    require('../middlewares/compression')(this); // gzip by default
     // require('../middlewares/master-error')(this);
     require('../middlewares/fastboot')(this, { buildSandboxGlobals: this.buildSandboxGlobals });
     require('../middlewares/static-serve')(this);
