@@ -62,11 +62,8 @@ class StaticServeMiddleware {
     //   };
     // }
 
-    if (fs.existsSync(req.url)) {
-      res.sendFile(req.url);
-    } else {
-      res.send(new Error('404 Not Found'));
-    }
+    // uses root and prefix for requests
+    res.sendFile(req.url);
   }
 
   errorHandler(error, req, reply) {
