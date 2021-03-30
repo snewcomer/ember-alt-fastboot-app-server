@@ -122,7 +122,7 @@ class ClusterWorker extends EventEmitter {
    * Run by the start script, this should be executed just once.
    * This method:
    * - Processes and registers the middlewares.
-   * - Starts the express server.
+   * - Starts the fastify server.
    *
    * @method start
    * @returns {Promise} Promise that resolves when the server is listening.
@@ -167,12 +167,6 @@ class ClusterWorker extends EventEmitter {
         this.ui.writeLine(`Fastify HTTP server started on ${address}.`);
         resolve();
       });
-
-      // this.app.listen(this.port, this.host, () => {
-      //   this.ui.writeLine(`HTTP server started on ${this.port}.`);
-      //
-      //   resolve();
-      // });
     }).then(() => {
       process.send({ event: 'healthy' });
     });

@@ -29,6 +29,13 @@ class ClusterMaster {
    *
    * @constructor
    * @param {Object} options The permanent configuration of this cluster.
+   * @param {String} options.distPath
+   * @param {String} options.port
+   * @param {String} options.host
+   * @param {String} options.workerCount
+   * @param {Object} options.connector
+   * @param {Object} options.ui
+   * @param {Function} options.buildSandboxGlobals
    */
   constructor(options = {}) {
     assert(options.distPath || options.connector, 'ClusterMaster must be provided with either a distPath or a connector option.');

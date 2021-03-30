@@ -1,5 +1,6 @@
 'use strict';
 
+// this file is currently unused. the backing class is imported and configured by app directly
 const Connecter = require('../backing-classes/connector');
 const ClusterMaster = require('../backing-classes/cluster-master');
 
