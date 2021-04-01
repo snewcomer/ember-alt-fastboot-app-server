@@ -61,7 +61,7 @@ class ClusterWorker extends EventEmitter {
     // and/or `after` to create a total ordering of the middlewares.
     this.middlewares = new DAGMap();
 
-    // Using express for now. The API almost completely abstracts Express
+    // Using fastify. The API almost completely abstracts Fastify
     // so, save for the actualy middleware implementations, the whole thing
     // can be swapped out.
     this.app = fastify();
@@ -97,10 +97,10 @@ class ClusterWorker extends EventEmitter {
    *
    * @method addMiddleware
    * @param {String} middleware.name This is the name of the middleware in the DAG.
-   * @param {Function} [middleware.value] An Express middleware you wish to pass to `app.use`.
-   * @param {String} [middleware.value.method] The method which is used here: https://expressjs.com/en/4x/api.html#app.METHOD
-   * @param {String} [middleware.value.path] The optional path which is used here: https://expressjs.com/en/4x/api.html#app.METHOD
-   * @param {Function|Function[]} [middleware.value.callback] The callback(s) which are passed here: https://expressjs.com/en/4x/api.html#app.METHOD
+   * @param {Function} [middleware.value] A Fastify middleware you wish to pass to `app.use`.
+   * @param {String} [middleware.value.method] The method which is used here: https://www.fastify.io/docs/latest/Routes/#options
+   * @param {String} [middleware.value.path] The optional path which is used here: https://www.fastify.io/docs/latest/Routes/#options
+   * @param {Function|Function[]} [middleware.value.callback] The callback(s) which are passed here: https://www.fastify.io/docs/latest/Routes/#options
    * @param {String|String[]} middleware.before This specifies the middlewares that this must run before.
    * @param {String|String[]} middleware.after This specifies the middlewares that this must run after.
    * @public
