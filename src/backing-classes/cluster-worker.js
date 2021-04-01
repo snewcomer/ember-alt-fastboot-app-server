@@ -3,7 +3,9 @@
 const EventEmitter = require('events').EventEmitter;
 
 const DAGMap = require('dag-map').default;
-const express = require('express');
+const fastify = require('fastify');
+
+const path = require('path')
 
 const UI = require('./ui');
 
@@ -40,7 +42,7 @@ class ClusterWorker extends EventEmitter {
 
     this.host = options.host;
     this.port = options.port;
-    this.sandboxGlobals = options.sandboxGlobals;
+    this.buildSandboxGlobals = options.buildSandboxGlobals;
 
     this.distPath = options.distPath || null;
 
@@ -59,10 +61,10 @@ class ClusterWorker extends EventEmitter {
     // and/or `after` to create a total ordering of the middlewares.
     this.middlewares = new DAGMap();
 
-    // Using express for now. The API almost completely abstracts Express
+    // Using fastify. The API almost completely abstracts Fastify
     // so, save for the actualy middleware implementations, the whole thing
     // can be swapped out.
-    this.app = express();
+    this.app = fastify();
     this._started = false;
 
     this.loadMiddleware();
@@ -78,10 +80,9 @@ class ClusterWorker extends EventEmitter {
    */
   loadMiddleware() {
     // require('../middlewares/basic-auth')(this);
-    require('../middlewares/compression')(this);
-    require('../middlewares/master-error')(this);
-    require('../middlewares/fastboot')(this, { sandboxGlobals: this.sandboxGlobals });
-    require('../middlewares/missing-assets')(this);
+    require('../middlewares/compression')(this); // gzip by default
+    // require('../middlewares/master-error')(this);
+    require('../middlewares/fastboot')(this, { buildSandboxGlobals: this.buildSandboxGlobals });
     require('../middlewares/static-serve')(this);
   }
 
@@ -96,10 +97,10 @@ class ClusterWorker extends EventEmitter {
    *
    * @method addMiddleware
    * @param {String} middleware.name This is the name of the middleware in the DAG.
-   * @param {Function} [middleware.value] An Express middleware you wish to pass to `app.use`.
-   * @param {String} [middleware.value.method] The method which is used here: https://expressjs.com/en/4x/api.html#app.METHOD
-   * @param {String} [middleware.value.path] The optional path which is used here: https://expressjs.com/en/4x/api.html#app.METHOD
-   * @param {Function|Function[]} [middleware.value.callback] The callback(s) which are passed here: https://expressjs.com/en/4x/api.html#app.METHOD
+   * @param {Function} [middleware.value] A Fastify middleware you wish to pass to `app.use`.
+   * @param {String} [middleware.value.method] The method which is used here: https://www.fastify.io/docs/latest/Routes/#options
+   * @param {String} [middleware.value.path] The optional path which is used here: https://www.fastify.io/docs/latest/Routes/#options
+   * @param {Function|Function[]} [middleware.value.callback] The callback(s) which are passed here: https://www.fastify.io/docs/latest/Routes/#options
    * @param {String|String[]} middleware.before This specifies the middlewares that this must run before.
    * @param {String|String[]} middleware.after This specifies the middlewares that this must run after.
    * @public
@@ -121,14 +122,20 @@ class ClusterWorker extends EventEmitter {
    * Run by the start script, this should be executed just once.
    * This method:
    * - Processes and registers the middlewares.
-   * - Starts the express server.
+   * - Starts the fastify server.
    *
    * @method start
    * @returns {Promise} Promise that resolves when the server is listening.
    * @public
    */
-  start() {
+  async start() {
     this._started = true;
+
+    await this.app.register(require('fastify-express'))
+    await this.app.register(require('fastify-static'), {
+      root: path.join(this.distPath, 'webroot'),
+      prefix: '/webroot/',
+    });
 
     this.middlewares.each((name, value) => {
       // "Missing" nodes still show up in the topsort.
@@ -138,33 +145,26 @@ class ClusterWorker extends EventEmitter {
 
       if (value instanceof Function) {
         // Sugar for simplistic middlewares that are just `app.use`.
+        // fastify-express
         this.app.use(value);
       } else {
-        // Supports the invocation pattern for https://expressjs.com/en/4x/api.html#app.METHOD
         const method = value.method;
         const path = value.path;
         const callback = value.callback || value.callbacks;
 
-        const args = [];
-
-        if (path) {
-          args.push(path);
-        }
-
-        if (Array.isArray(callback)) {
-          args.splice(args.length, 0, ...callback);
-        } else {
-          args.push(callback);
-        }
-
-        this.app[method](...args);
+        // fastboot, static-serve
+        this.app.route({ method, url: path, handler: callback });
       }
     });
 
     return new Promise(resolve => {
-      this.app.listen(this.port, this.host, () => {
-        this.ui.writeLine(`HTTP server started on ${this.port}.`);
+      this.app.listen(this.port, this.host, (err, address) => {
+        if (err) {
+          this.app.log.error(err);
+          throw err;
+        }
 
+        this.ui.writeLine(`Fastify HTTP server started on ${address}.`);
         resolve();
       });
     }).then(() => {

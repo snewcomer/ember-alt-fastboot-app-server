@@ -29,6 +29,13 @@ class ClusterMaster {
    *
    * @constructor
    * @param {Object} options The permanent configuration of this cluster.
+   * @param {String} options.distPath
+   * @param {String} options.port
+   * @param {String} options.host
+   * @param {String} options.workerCount
+   * @param {Object} options.connector
+   * @param {Object} options.ui
+   * @param {Function} options.buildSandboxGlobals
    */
   constructor(options = {}) {
     assert(options.distPath || options.connector, 'ClusterMaster must be provided with either a distPath or a connector option.');
@@ -63,7 +70,7 @@ class ClusterMaster {
     // Immutable properties of this cluster master instance.
     this.host = options.host;
     this.port = options.port;
-    this.sandboxGlobals = options.sandboxGlobals;
+    this.buildSandboxGlobals = this.buildSandboxGlobals;
 
     // Determine how many workers to spin up.
     if (options.workerCount) {
@@ -263,7 +270,7 @@ class ClusterMaster {
       distPath: this.distPath,
       host: this.host,
       port: this.port,
-      sandboxGlobals: this.sandboxGlobals
+      buildSandboxGlobals: this.buildSandboxGlobals,
     };
 
     return {
