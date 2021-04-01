@@ -10,11 +10,11 @@ Note - these ideas presented here are from the brain of an unnamed person. We ca
 - Delegation of responsibilities between three separate primary objects:
   - Cluster Master
   - Cluster Workers
-  - Express HTTP Server
+  - HTTP Server
 
 ## Constituent Components
 
-The three primary objects are the components that would be required in order to build a production web server on top of Express/Node.js.
+The three primary objects are the components that would be required in order to build a production web server on top of Fastify/Node.js.
 
 ### Cluster Master
 
