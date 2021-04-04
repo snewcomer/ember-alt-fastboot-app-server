@@ -2,7 +2,7 @@
 
 // this file is currently unused. the backing class is imported and configured by app directly
 const Connecter = require('../backing-classes/connector');
-const ClusterMaster = require('../backing-classes/cluster-master');
+const FastBootServer = require('../backing-classes/cluster-master');
 
 const config = {
   connector: new Connecter(),
@@ -11,6 +11,6 @@ const config = {
   workerCount: 1
 };
 
-const master = new ClusterMaster(config);
+const master = new FastBootServer(config);
 
 master.start();

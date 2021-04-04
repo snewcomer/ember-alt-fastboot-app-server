@@ -29,7 +29,7 @@ describe("FastBootAppServer", function() {
         connector: {},
         distPath: 'some/dist/path'
       });
-    }).to.throw(/ClusterMaster must be provided with either a distPath or a connector option, but not both/);
+    }).to.throw(/FastBootServer must be provided with either a distPath or a connector option, but not both/);
   });
 
   it("serves an HTTP 500 response if the app can't be found", function() {

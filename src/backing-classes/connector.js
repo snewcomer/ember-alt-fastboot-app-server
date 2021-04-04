@@ -4,7 +4,7 @@ const EventEmitter = require('events').EventEmitter;
 
 /**
  * Connector is used to communicate between any external sources
- * and the ClusterMaster instance. It is a generic EventEmitter with
+ * and the FastBootServer instance. It is a generic EventEmitter with
  * just one default event. Customization of this is expected in most
  * cases.
  *

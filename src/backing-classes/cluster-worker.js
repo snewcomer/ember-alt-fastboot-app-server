@@ -31,7 +31,7 @@ class ClusterWorker extends EventEmitter {
   constructor(argumentOptions = {}) {
     super();
 
-    // Process command line arguments from ClusterMaster.
+    // Process command line arguments from FastBootServer.
     this.forkOptions = deserialize(process.argv[2])
 
     // Define the enumerated options set.

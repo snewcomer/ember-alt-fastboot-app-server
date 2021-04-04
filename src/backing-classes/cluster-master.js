@@ -11,17 +11,17 @@ const UI = require('./ui');
 const serialize = require('../utils/serialization').serialize;
 
 /**
- * A ClusterMaster object is instantiated by the server start script.
+ * A FastBootServer object is instantiated by the server start script.
  *
  * It is responsible for:
  * - Providing a simple built-in way to start a vanilla cluster.
  * - Managing all state associated with the cluster.
  * - Propogate its state into workers.
  *
- * @class ClusterMaster
+ * @class FastBootServer
  * @public
  */
-class ClusterMaster {
+class FastBootServer {
 
   /**
    * Wires up *permanent* configuration of this cluster. None of these attributes
@@ -38,8 +38,8 @@ class ClusterMaster {
    * @param {Function} options.buildSandboxGlobals
    */
   constructor(options = {}) {
-    assert(options.distPath || options.connector, 'ClusterMaster must be provided with either a distPath or a connector option.');
-    assert(!(options.distPath && options.connector), 'ClusterMaster must be provided with either a distPath or a connector option, but not both.');
+    assert(options.distPath || options.connector, 'FastBootServer must be provided with either a distPath or a connector option.');
+    assert(!(options.distPath && options.connector), 'FastBootServer must be provided with either a distPath or a connector option, but not both.');
 
     if (options.connector) {
       // Use the provided connector.
@@ -291,4 +291,4 @@ class ClusterMaster {
   }
 }
 
-module.exports = ClusterMaster;
+module.exports = FastBootServer;
