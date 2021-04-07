@@ -11,17 +11,17 @@ const UI = require('./ui');
 const serialize = require('../utils/serialization').serialize;
 
 /**
- * A ClusterMaster object is instantiated by the server start script.
+ * A FastBootServer object is instantiated by the server start script.
  *
  * It is responsible for:
  * - Providing a simple built-in way to start a vanilla cluster.
  * - Managing all state associated with the cluster.
  * - Propogate its state into workers.
  *
- * @class ClusterMaster
+ * @class FastBootServer
  * @public
  */
-class ClusterMaster {
+class FastBootServer {
 
   /**
    * Wires up *permanent* configuration of this cluster. None of these attributes
@@ -38,8 +38,8 @@ class ClusterMaster {
    * @param {Function} options.buildSandboxGlobals
    */
   constructor(options = {}) {
-    assert(options.distPath || options.connector, 'ClusterMaster must be provided with either a distPath or a connector option.');
-    assert(!(options.distPath && options.connector), 'ClusterMaster must be provided with either a distPath or a connector option, but not both.');
+    assert(options.distPath || options.connector, 'FastBootServer must be provided with either a distPath or a connector option.');
+    assert(!(options.distPath && options.connector), 'FastBootServer must be provided with either a distPath or a connector option, but not both.');
 
     if (options.connector) {
       // Use the provided connector.
@@ -57,6 +57,8 @@ class ClusterMaster {
       this._static = true;
     }
 
+    this.workerPath = options.workerPath;
+
     this.ui = options.ui;
     if (!this.ui) {
       this.ui = new UI();
@@ -70,7 +72,9 @@ class ClusterMaster {
     // Immutable properties of this cluster master instance.
     this.host = options.host;
     this.port = options.port;
-    this.buildSandboxGlobals = this.buildSandboxGlobals;
+    this.buildSandboxGlobals = options.buildSandboxGlobals;
+
+    this.minifyHtml = options.minifyHtml;
 
     // Determine how many workers to spin up.
     if (options.workerCount) {
@@ -271,10 +275,12 @@ class ClusterMaster {
       host: this.host,
       port: this.port,
       buildSandboxGlobals: this.buildSandboxGlobals,
+      minifyHtml: this.minifyHtml,
     };
 
+    const workerPath = this.workerPath || path.join(__dirname, '../start-scripts/cluster-worker.js');
     return {
-      exec: path.join(__dirname, '../start-scripts/cluster-worker.js'),
+      exec: workerPath,
       args: [serialize(workerOptions)]
     };
   }
@@ -291,4 +297,4 @@ class ClusterMaster {
   }
 }
 
-module.exports = ClusterMaster;
+module.exports = FastBootServer;

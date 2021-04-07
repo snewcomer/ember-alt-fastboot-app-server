@@ -3,6 +3,7 @@
 
 const path = require('path');
 const FastBoot = require('fastboot');
+const { minify_html } = require('minify-html-ssr');
 
 /**
  * The FastBootMiddleware class provides a stateful wrapper around `fastboot`.
@@ -68,20 +69,20 @@ class FastBootMiddleware {
    * The middleware method should be called, bound, by express.
    * @method middleware
    */
-  middleware(req, res, next) {
+  middleware(req, reply) {
     // If we don't have a valid FastBoot instance, send a 500.
     if (!this.fastboot) {
-      res.sendStatus(500);
+      reply.sendStatus(500);
       return;
     }
 
     if (process.env.FASTBOOT_DISABLED || req.query.fastboot === 'false') {
-      res.sendFile('index.html', { root: path.join(this.distPath, 'webroot') })
+      reply.sendFile('index.html', { root: path.join(this.distPath, 'webroot') })
     } else {
-      this.fastboot.visit(req.url, { request: req, response: res })
+      this.fastboot.visit(req.url, { request: req, response: reply })
         .then(
-          result => this.success(result, req, res, next),
-          error => this.failure(error, req, res, next)
+          result => this.success(result, req, reply),
+          error => this.failure(error, req, reply)
         );
     }
   }
@@ -91,11 +92,10 @@ class FastBootMiddleware {
    *
    * @param {*} result
    * @param {*} req
-   * @param {*} res
-   * @param {*} next
+   * @param {*} reply
    * @public
    */
-  success(result, req, res, next) {
+  success(result, req, reply) {
     let path = req.url;
 
     // let responseBody = opts.chunkedResponse ? result.chunks() : result.html();
@@ -106,30 +106,35 @@ class FastBootMiddleware {
       let statusMessage = result.error ? 'NOT OK ' : 'OK ';
 
       for (var pair of headers.entries()) {
-        res.set(pair[0], pair[1]);
+        reply.set(pair[0], pair[1]);
       }
 
       if (result.error) {
         this.ui.writeLine('RESILIENT MODE CAUGHT:', result.error.stack);
-        next(result.error);
+        // res.(result.error);
       }
 
       this.ui.writeLine(result.statusCode, statusMessage + path);
-      res.status(result.statusCode);
+      reply.status(result.statusCode);
 
       if (typeof body === 'string') {
-        res.type('text/html');
-        res.send(body);
+        reply.type('text/html');
+
+        if (this.options.minifyHtml) {
+          reply.send(minify_html(body));
+        } else {
+          reply.send(body);
+        }
       } else if (result.error) {
-        res.send(body[0]);
+        reply.send(body[0]);
       } else {
-        body.forEach(chunk => res.write(chunk));
-        res.end();
+        body.forEach(chunk => reply.write(chunk));
+        reply.end();
       }
     })
     .catch(error => {
-      res.status(500);
-      next(error);
+      reply.statusCode(500);
+      reply.send(error);
     });
   }
 
@@ -138,16 +143,15 @@ class FastBootMiddleware {
    *
    * @param {*} result
    * @param {*} req
-   * @param {*} res
-   * @param {*} next
+   * @param {*} reply
    * @public
    */
-  failure(error, req, res, next) {
+  failure(error, req, reply) {
     if (error.name === 'UnrecognizedURLError') {
-      next();
+      reply.send(error);
     } else {
-      res.status(500);
-      next(error);
+      reply.statusCode(500);
+      reply.send(error);
     }
   }
 }
