@@ -3,7 +3,7 @@
 
 const path = require('path');
 const FastBoot = require('fastboot');
-// const { minify_html } = require('../utils/html_whitespace');
+const { minify_html } = require('minify-html-ssr');
 
 /**
  * The FastBootMiddleware class provides a stateful wrapper around `fastboot`.
@@ -119,7 +119,12 @@ class FastBootMiddleware {
 
       if (typeof body === 'string') {
         reply.type('text/html');
-        reply.send(body);
+
+        if (this.options.minifyHtml) {
+          reply.send(minify_html(body));
+        } else {
+          reply.send(body);
+        }
       } else if (result.error) {
         reply.send(body[0]);
       } else {

@@ -57,6 +57,8 @@ class FastBootServer {
       this._static = true;
     }
 
+    this.workerPath = options.workerPath;
+
     this.ui = options.ui;
     if (!this.ui) {
       this.ui = new UI();
@@ -70,7 +72,9 @@ class FastBootServer {
     // Immutable properties of this cluster master instance.
     this.host = options.host;
     this.port = options.port;
-    this.buildSandboxGlobals = this.buildSandboxGlobals;
+    this.buildSandboxGlobals = options.buildSandboxGlobals;
+
+    this.minifyHtml = options.minifyHtml;
 
     // Determine how many workers to spin up.
     if (options.workerCount) {
@@ -271,10 +275,12 @@ class FastBootServer {
       host: this.host,
       port: this.port,
       buildSandboxGlobals: this.buildSandboxGlobals,
+      minifyHtml: this.minifyHtml,
     };
 
+    const workerPath = this.workerPath || path.join(__dirname, '../start-scripts/cluster-worker.js');
     return {
-      exec: path.join(__dirname, '../start-scripts/cluster-worker.js'),
+      exec: workerPath,
       args: [serialize(workerOptions)]
     };
   }

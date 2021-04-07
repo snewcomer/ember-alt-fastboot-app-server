@@ -8,7 +8,7 @@ Note - these ideas presented here are from the brain of an unnamed person. We ca
 - Cluster management.
 - Being aware of distribution changes and downloading of new assets.
 - Delegation of responsibilities between three separate primary objects:
-  - Cluster Master
+  - Cluster Master (FasBootServer)
   - Cluster Workers
   - HTTP Server
 
@@ -16,7 +16,7 @@ Note - these ideas presented here are from the brain of an unnamed person. We ca
 
 The three primary objects are the components that would be required in order to build a production web server on top of Fastify/Node.js.
 
-### Cluster Master
+### Cluster Master (FastBoot Server)
 
 This process should be responsible for setting everything up and for communicating with the workers. In general, all information regarding application state should be the responsibility of this process.
 

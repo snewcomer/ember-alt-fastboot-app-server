@@ -43,6 +43,8 @@ class ClusterWorker extends EventEmitter {
     this.host = options.host;
     this.port = options.port;
     this.buildSandboxGlobals = options.buildSandboxGlobals;
+    this.minifyHtml = options.minifyHtml;
+    this.workerPath = options.workerPath;
 
     this.distPath = options.distPath || null;
 
@@ -82,7 +84,7 @@ class ClusterWorker extends EventEmitter {
     // require('../middlewares/basic-auth')(this);
     require('../middlewares/compression')(this); // gzip by default
     // require('../middlewares/master-error')(this);
-    require('../middlewares/fastboot')(this, { buildSandboxGlobals: this.buildSandboxGlobals });
+    require('../middlewares/fastboot')(this, { buildSandboxGlobals: this.buildSandboxGlobals, minifyHtml: this.minifyHtml });
     require('../middlewares/static-serve')(this);
   }
 
