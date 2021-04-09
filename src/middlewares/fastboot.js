@@ -133,7 +133,7 @@ class FastBootMiddleware {
       }
     })
     .catch(error => {
-      reply.statusCode(500);
+      reply.statusCode = 500;
       reply.send(error);
     });
   }
@@ -150,7 +150,7 @@ class FastBootMiddleware {
     if (error.name === 'UnrecognizedURLError') {
       reply.send(error);
     } else {
-      reply.statusCode(500);
+      reply.statusCode = 500;
       reply.send(error);
     }
   }
