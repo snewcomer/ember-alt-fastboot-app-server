@@ -32,7 +32,7 @@
     "fastify": "^3.14.0",
     "fastify-express": "^0.3.2",
     "fastify-static": "^4.0.1",
-    "minify-html-ssr": "^0.2.0"
+    "minify-html-ssr": "^0.3.0"
   },
   "devDependencies": {
     "babel-core": "^6.10.4",
