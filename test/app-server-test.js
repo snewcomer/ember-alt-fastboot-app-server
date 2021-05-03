@@ -3,7 +3,7 @@
 const path              = require('path');
 const fork              = require('child_process').fork;
 const expect            = require('chai').expect;
-const FastBootAppServer = require('../src/backing-classes/cluster-master');
+const FastBootAppServer = require('../src/backing-classes/fastboot-server');
 const request           = require('request-promise-native').defaults({ simple: false, resolveWithFullResponse: true });
 
 let server;

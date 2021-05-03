@@ -1,7 +1,7 @@
 'use strict';
 
 const path = require('path');
-const FastBootAppServer = require('../../src/backing-classes/cluster-master');
+const FastBootAppServer = require('../../src/backing-classes/fastboot-server');
 const Connector = require('../../src/backing-classes/connector');
 
 const connector = new Connector({

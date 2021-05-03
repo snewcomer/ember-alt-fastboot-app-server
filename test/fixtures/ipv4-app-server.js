@@ -1,7 +1,7 @@
 'use strict';
 
 var path = require('path');
-const FastBootAppServer = require('../../src/backing-classes/cluster-master');
+const FastBootAppServer = require('../../src/backing-classes/fastboot-server');
 
 var server = new FastBootAppServer({
   port: 4100,

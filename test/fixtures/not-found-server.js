@@ -1,6 +1,6 @@
 'use strict';
 
-const FastBootAppServer = require('../../src/backing-classes/cluster-master');
+const FastBootAppServer = require('../../src/backing-classes/fastboot-server');
 
 var server = new FastBootAppServer({
   host: 'localhost',
