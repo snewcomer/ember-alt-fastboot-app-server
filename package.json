@@ -45,5 +45,8 @@
     "request": "^2.88.0",
     "request-promise": "^4.2.1",
     "request-promise-native": "^1.0.7"
+  },
+  "volta": {
+    "node": "14.17.1"
   }
 }
